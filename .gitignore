@@ -1,0 +1,7 @@
+node_modules
+*.log
+*.lock
+.env
+
+index_temp.html
+awsConfig.json
