@@ -251,7 +251,4 @@ async function getBansByUserId(res, user_id) {
 	res.end()
 }
 
-
-
-
 module.exports = router;
