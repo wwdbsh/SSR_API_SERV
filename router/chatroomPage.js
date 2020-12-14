@@ -140,9 +140,7 @@ async function getClassrooms(res) {
 
 async function getChatrooms(res) {
 	try {
-		const chatroomQuery = `select chatroom_id, chatroom_name, chatroom_type, parent_chatroom_id, classroom_id 
-			from chatroom, chatroom_type 
-			where chatroom.chatroom_type_id = chatroom_type.chatroom_type_id;`;
+		const chatroomQuery = `select * from view_chatroom_info`
 
 		let [rows, field, error] = await db.query(chatroomQuery);
 		let chatrooms = []
@@ -155,7 +153,9 @@ async function getChatrooms(res) {
 			chatroom.chatroom_type = row.chatroom_type;
 			chatroom.parent_chatroom_id = row.parent_chatroom_id;
 			chatroom.classroom_id = row.classroom_id;
-			
+			chatroom.primary_color = row.primary_color || "#048179";
+			chatroom.secondary_color = row.secondary_color || "#023aa1";
+			chatroom.banner_url = row.banner_url;
 			chatrooms.push(chatroom);
 		}))
 		res.status(200).json({
@@ -203,10 +203,8 @@ async function searchChatroomsByName(search_name, res) {
 
 async function getChatroomsByUserId(res, user_id) {
 	try {
-		const chatroomQuery = `select chatroom_id, chatroom_name, chatroom_type, parent_chatroom_id, classroom_id
-			from chatroom, chatroom_type 
-			where chatroom_id in (select chatroom_id from is_member_view where user_id = ${user_id})
-			 and chatroom.chatroom_type_id = chatroom_type.chatroom_type_id;`;
+		const chatroomQuery = `select * from view_chatroom_info
+			where chatroom_id in (select chatroom_id from is_member_view where user_id = ${user_id})`;
 		let [rows, field, error] = await db.query(chatroomQuery);
 		const chatrooms = []
 		await Promise.all(rows.map(async (row) => {
@@ -217,6 +215,9 @@ async function getChatroomsByUserId(res, user_id) {
 			chatroom.chatroom_type = row.chatroom_type;
 			chatroom.parent_chatroom_id = row.parent_chatroom_id;
 			chatroom.classroom_id = row.classroom_id;
+			chatroom.primary_color = row.primary_color || "#048179";
+			chatroom.secondary_color = row.secondary_color || "#023aa1";
+			chatroom.banner_url = row.banner_url;
 			
 			chatrooms.push(chatroom);
 		}))
@@ -250,5 +251,8 @@ async function getBansByUserId(res, user_id) {
 	}
 	res.end()
 }
+
+
+
 
 module.exports = router;
